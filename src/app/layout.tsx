@@ -23,7 +23,6 @@ export default function RootLayout({
           sx={{
             minHeight: "90vh",
             display: "flex",
-            border: "1px solid red",
             alignItems: "center",
             justifyContent: "center",
           }}

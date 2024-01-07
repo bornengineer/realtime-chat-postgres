@@ -32,7 +32,7 @@ const Room = ({ params }: { params: { roomId: string } }) => {
   return (
     <Stack gap={3}>
       <Typography>
-        Room - <strong>{selectedRoom?.name}</strong> ({roomId})
+        <strong>{selectedRoom?.name}</strong> ({roomId})
       </Typography>
       <Messages roomId={roomId} initialMessages={initialMessages} />
       <SendMessage roomId={roomId} />

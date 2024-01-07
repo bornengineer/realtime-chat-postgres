@@ -23,14 +23,12 @@ export default function Home() {
       sx={{
         gap: 4,
         flexDirection: "column",
-        border: "1px solid red",
         alignItems: "center",
         justifyContent: "center",
       }}
     >
       <Stack direction={"row"} gap={2}>
         <TextField
-          variant="standard"
           label={"Room name (optional)"}
           onChange={(event) => {
             setRoomName(event.target.value);
