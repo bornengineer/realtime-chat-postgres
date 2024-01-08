@@ -76,11 +76,12 @@ const Messages = ({ initialMessages, roomId }: MessagesProps) => {
 
   return (
     <Stack>
-      {!groupedMessagesByDay?.length && !incomingMessages?.length ? (
+      {!Object.keys(groupedMessagesByDay)?.length &&
+      !incomingMessages?.length ? (
         <Typography>No messages in this room, start chatting... </Typography>
       ) : (
         <>
-          {groupedMessagesByDay?.length ? (
+          {Object.keys(groupedMessagesByDay)?.length ? (
             Object.keys(groupedMessagesByDay).map((date) => (
               <Stack key={date} mt={1}>
                 <Stack mb={0.5} mt={1}>
