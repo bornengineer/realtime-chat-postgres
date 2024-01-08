@@ -13,6 +13,12 @@ const SendMessage = ({ roomId }: SendMessageProps) => {
   const sendMessage = async () => {
     await axios.post(`/api/${roomId}/message`, { message, roomId });
   };
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      sendMessage();
+    }
+  };
   return (
     <Stack direction={"row"} alignItems={"center"} gap={2}>
       <TextField
@@ -22,6 +28,7 @@ const SendMessage = ({ roomId }: SendMessageProps) => {
         onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
           setMessage(event.target.value);
         }}
+        onKeyDown={handleKeyDown}
         onFocus={() => setMessage("")}
       ></TextField>
       <Button
