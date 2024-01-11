@@ -5,6 +5,9 @@ export async function GET(req: Request) {
     where: {
       id: roomId,
     },
+    include: {
+      users: true,
+    },
   });
   return new Response(JSON.stringify(room));
 }

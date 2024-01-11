@@ -3,7 +3,7 @@ import { getUserFromToken } from "@/utils/authUtils";
 import { NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
-  const { name } = (await req.json()) || "";
+  const { roomId } = await req.json();
   const token = req.cookies.get("token")?.value ?? "";
   const user = getUserFromToken(token);
   const existingUser = await db.user.findMany({
@@ -11,16 +11,15 @@ export async function POST(req: NextRequest) {
       email: user?.email,
     },
   });
-  const createdRoom = await db.chatRoom.create({
+  await db.chatRoom.update({
+    where: {
+      id: roomId,
+    },
     data: {
-      ...(name.length && { name }),
-      creator: {
-        connect: { id: existingUser[0].id },
-      },
       users: {
         connect: { id: existingUser[0].id },
       },
     },
   });
-  return new Response(JSON.stringify(createdRoom.id));
+  return new Response(JSON.stringify({ success: true }));
 }

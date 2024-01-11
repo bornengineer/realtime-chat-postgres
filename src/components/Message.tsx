@@ -1,4 +1,5 @@
 "use client";
+import { User } from "@/utils/types";
 import { Stack, Typography } from "@mui/material";
 import moment from "moment";
 
@@ -6,38 +7,69 @@ interface MessageProps {
   message: string;
   id: string;
   createdAt: Date;
+  sender: User;
+  currUser: { email: string; username: string };
 }
 
 const Message = (props: MessageProps) => {
-  const { message, createdAt } = props;
+  const { message, createdAt, sender, currUser } = props;
   return (
     <Stack
-      direction={"row"}
-      justifyContent={"space-between"}
-      alignItems={"center"}
       sx={{
-        background:
-          "linear-gradient(90deg, rgba(153,148,242,1) 0%, rgba(116,111,196,1) 100%)",
-        my: 1,
-        borderRadius: "10px",
-        px: 2,
-        pt: 1,
-        pb: 2,
-        color: "#fff",
+        alignItems:
+          sender.username === currUser.username ? "flex-end" : "flex-start",
       }}
     >
-      <Typography variant="body1">{message}</Typography>
-      <Typography
-        variant="caption"
+      <Stack
+        direction={"column"}
+        justifyContent={"space-between"}
+        alignItems={"center"}
+        gap={0}
         sx={{
-          color: "#f0f6fa8c",
-          position: "absolute",
-          ml: 33,
-          mt: 4,
+          background:
+            sender.username === currUser.username ? "#d9fdd3" : "#fff",
+          my: 1,
+          borderRadius: "10px",
+          p: "6px 8px 2px 8px",
+          color: "#fff",
+          minWidth: "25%",
+          maxWidth: "70%",
+          flexWrap: "wrap",
+          alignItems: "flex-end",
+          boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.2)",
         }}
       >
-        {moment(createdAt).format("hh:mm:ss A")}
-      </Typography>
+        <Stack
+          sx={{
+            justifyContent: "flex-start",
+            width: "100%",
+            gap: 0.2,
+          }}
+        >
+          {sender.username !== currUser.username && (
+            <Typography
+              fontWeight={"bold"}
+              sx={{
+                color: "#53bdeb",
+                fontSize: "13px",
+              }}
+            >
+              {sender.username}
+            </Typography>
+          )}
+          <Typography sx={{ color: "#111b21", fontSize: "13px" }}>
+            {message}
+          </Typography>
+        </Stack>
+        <Typography
+          sx={{
+            color: "#667781",
+            fontSize: "10px",
+          }}
+        >
+          {moment(createdAt).format("hh:mm:ss A")}
+        </Typography>
+      </Stack>
     </Stack>
   );
 };

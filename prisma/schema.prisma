@@ -16,6 +16,9 @@ model ChatRoom {
   updatedAt DateTime  @updatedAt
   messages  Message[]
   name      String    @default("My room")
+  users     User[]    @relation("RoomUsers")
+  creator   User?     @relation(fields: [creatorId], references: [id])
+  creatorId String?
 }
 
 model Message {
@@ -25,4 +28,24 @@ model Message {
   text       String
   chatRoom   ChatRoom @relation(fields: [chatRoomId], references: [id])
   chatRoomId String
+  user       User?    @relation(fields: [userId], references: [id])
+  userId     String?
+}
+
+model User {
+  id                        String     @id @default(cuid())
+  username                  String     @unique
+  email                     String     @unique
+  password                  String
+  isVerified                Boolean    @default(false)
+  isAdmin                   Boolean    @default(false)
+  forgotPasswordToken       String?
+  forgotPasswordTokenExpiry DateTime?
+  verifyToken               String?
+  verifyTokenExpiry         DateTime?
+  createdAt                 DateTime   @default(now())
+  updatedAt                 DateTime   @updatedAt
+  chatRooms                 ChatRoom[] @relation("RoomUsers")
+  messages                  Message[]
+  chatRoomsCreated          ChatRoom[]
 }

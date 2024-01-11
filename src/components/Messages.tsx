@@ -1,25 +1,39 @@
 "use client";
-import { Divider, Stack, Typography } from "@mui/material";
+import { Stack, Typography } from "@mui/material";
 import { useState, useEffect } from "react";
 import { pusherClient } from "@/lib/pusher";
 import Message from "./Message";
 import moment from "moment";
+import { User } from "@/utils/types";
 
 interface MessagesProps {
   initialMessages: IncomingMessagesProps[];
   roomId: string;
+  stackRef: React.MutableRefObject<HTMLDivElement | null>;
+  scrollBottom: any;
 }
 
 interface IncomingMessagesProps {
   message: string;
   id: string;
   createdAt: Date;
+  user: User;
 }
 
-const Messages = ({ initialMessages, roomId }: MessagesProps) => {
+const Messages = ({
+  initialMessages,
+  roomId,
+  stackRef,
+  scrollBottom,
+}: MessagesProps) => {
   const [incomingMessages, setIncomingMessages] = useState<
     IncomingMessagesProps[]
   >([]);
+  const [pusherError, setPusherError] = useState("");
+  const [currUser, setCurrUser] = useState({
+    email: "",
+    username: "",
+  });
 
   let temp = incomingMessages;
   useEffect(() => {
@@ -38,6 +52,9 @@ const Messages = ({ initialMessages, roomId }: MessagesProps) => {
         temp = [...temp, messageBody];
       }
     });
+    pusherClient.bind("pusher:error", (res: any) => {
+      setPusherError(res);
+    });
     return () => {
       pusherClient.unsubscribe(roomId);
     };
@@ -50,8 +67,8 @@ const Messages = ({ initialMessages, roomId }: MessagesProps) => {
   } {
     const groupedMessages: { [key: string]: IncomingMessagesProps[] } = {};
     messages.forEach((message) => {
-      const messageDate = moment(message.createdAt);
-      const currentDate = moment();
+      const messageDate = moment(message.createdAt).startOf("day");
+      const currentDate = moment().startOf("day");
 
       const dayDifference = currentDate.diff(messageDate, "days");
 
@@ -74,32 +91,63 @@ const Messages = ({ initialMessages, roomId }: MessagesProps) => {
     return groupedMessages;
   }
 
+  useEffect(() => {
+    const getUser = async () => {
+      const loggedInUser = await fetch("/api/users/getLoggedInUser");
+      const user = await loggedInUser.json();
+      if (Object.keys(user).length) setCurrUser(user);
+    };
+    getUser();
+  }, []);
+
+  useEffect(() => {
+    scrollBottom(stackRef);
+  }, [incomingMessages]);
+
   return (
     <Stack>
       {!Object.keys(groupedMessagesByDay)?.length &&
       !incomingMessages?.length ? (
-        <Typography>No messages in this room, start chatting... </Typography>
+        <Stack
+          sx={{
+            minHeight: "72vh",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Typography color="#8e8f8e">
+            No messages in this room, start chatting...{" "}
+          </Typography>
+        </Stack>
       ) : (
         <>
           {Object.keys(groupedMessagesByDay)?.length ? (
             Object.keys(groupedMessagesByDay).map((date) => (
               <Stack key={date} mt={1}>
-                <Stack mb={0.5} mt={1}>
+                <Stack mb={1} mt={1} alignItems={"center"}>
                   <Typography
                     variant="caption"
                     sx={{
                       color: "#6f6c598c",
                       textAlign: "center",
-                      position: "absolute",
-                      left: "50%",
-                      transform: "translate(-50%, -50%)",
-                      background: "#fff",
+                      background: "#fffceb",
+                      borderRadius: "5px",
+                      maxWidth: "80px",
                       px: 1,
+                      boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.2)",
                     }}
                   >
                     {date}
                   </Typography>
-                  <Divider />
+                  {/* <Divider
+                    sx={{
+                      mb: 2,
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      border: "1px solid red",
+                    }}
+                  /> */}
                 </Stack>
                 {groupedMessagesByDay[date].map(
                   (message: IncomingMessagesProps) => (
@@ -108,6 +156,8 @@ const Messages = ({ initialMessages, roomId }: MessagesProps) => {
                         message={message.message}
                         id={message.id}
                         createdAt={message.createdAt}
+                        sender={message.user}
+                        currUser={currUser}
                       />
                     </Stack>
                   )
@@ -124,12 +174,17 @@ const Messages = ({ initialMessages, roomId }: MessagesProps) => {
                   message={item.message}
                   id={item.id}
                   createdAt={item.createdAt}
+                  sender={item.user}
+                  currUser={currUser}
                 />
               </Stack>
             ))
           ) : (
             <></>
           )}
+          <Typography variant="caption" color={"error"}>
+            {pusherError}
+          </Typography>
         </>
       )}
     </Stack>
