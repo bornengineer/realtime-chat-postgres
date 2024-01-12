@@ -22,12 +22,12 @@ export default function Home() {
     setError("");
     const room = await fetch(`/api/rooms/${roomIdInput}`);
     const selectedRoom = await room.json();
-    if (selectedRoom?.length) {
-      const joinRoom = await axios.post(`/api/${selectedRoom?.[0]?.id}/join`, {
-        roomId: selectedRoom?.[0]?.id,
+    if (Object.keys(selectedRoom).includes("id")) {
+      const joinRoom = await axios.post(`/api/${selectedRoom?.id}/join`, {
+        roomId: selectedRoom?.id,
       });
       if (joinRoom?.data?.success === true)
-        router.push(`/room/${selectedRoom?.[0]?.id}`);
+        router.push(`/room/${selectedRoom?.id}`);
     } else {
       setError("Room doesn't exists! Please create");
     }

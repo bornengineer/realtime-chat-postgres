@@ -8,15 +8,31 @@ export async function POST(request: NextRequest) {
     const { username, email, password } = reqBody;
 
     // check if user already exists
-    const user = await db.user.findMany({
+    const userWithEmail = await db.user.findMany({
       where: {
         email: email,
       },
     });
-    if (user?.length) {
-      console.log("exists------------------------------------------");
+    const userWithUsername = await db.user.findMany({
+      where: {
+        username: username,
+      },
+    });
+
+    if (userWithUsername?.length) {
+      console.log(
+        "user with username exists------------------------------------------"
+      );
       return NextResponse.json(
-        { error: "User already exists" },
+        { error: "User with username already exists" },
+        { status: 202 }
+      );
+    } else if (userWithEmail?.length) {
+      console.log(
+        "user with email exists------------------------------------------"
+      );
+      return NextResponse.json(
+        { error: "User with email already exists" },
         { status: 202 }
       );
     }

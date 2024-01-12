@@ -55,6 +55,13 @@ export default function LoginPage() {
     }
   };
 
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter" && !buttonDisabled) {
+      event.preventDefault();
+      onLogin();
+    }
+  };
+
   return (
     <>
       <Toaster />
@@ -79,10 +86,17 @@ export default function LoginPage() {
                 sx={{ textTransform: "capitalize" }}
                 id={field}
                 type={field}
-                label={field}
+                label={field === "email" ? `Username / ${field}` : field}
                 value={user[field]}
                 onChange={(e) => setUser({ ...user, [field]: e.target.value })}
-                placeholder={field === "email" ? "example@gmail.com" : ""}
+                placeholder={field === "email" ? "Type username or email" : ""}
+                onKeyDown={handleKeyDown}
+                FormHelperTextProps={{
+                  sx: {
+                    textTransform: "none",
+                    fontSize: "11px",
+                  },
+                }}
               />
             </Stack>
           ))}

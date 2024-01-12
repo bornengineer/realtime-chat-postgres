@@ -11,7 +11,14 @@ export async function POST(request: NextRequest) {
     // check if user exists
     const existingUser = await db.user.findMany({
       where: {
-        email: email,
+        OR: [
+          {
+            email: email,
+          },
+          {
+            username: email,
+          },
+        ],
       },
     });
     const user = existingUser[0];

@@ -3,6 +3,7 @@ import { Stack, Typography } from "@mui/material";
 import { useState, useEffect } from "react";
 import { pusherClient } from "@/lib/pusher";
 import Message from "./Message";
+import CircularProgress from "@mui/material/CircularProgress";
 import moment from "moment";
 import { User } from "@/utils/types";
 
@@ -11,6 +12,7 @@ interface MessagesProps {
   roomId: string;
   stackRef: React.MutableRefObject<HTMLDivElement | null>;
   scrollBottom: any;
+  isLoading: boolean;
 }
 
 interface IncomingMessagesProps {
@@ -25,6 +27,7 @@ const Messages = ({
   roomId,
   stackRef,
   scrollBottom,
+  isLoading,
 }: MessagesProps) => {
   const [incomingMessages, setIncomingMessages] = useState<
     IncomingMessagesProps[]
@@ -115,9 +118,13 @@ const Messages = ({
             justifyContent: "center",
           }}
         >
-          <Typography color="#8e8f8e">
-            No messages in this room, start chatting...{" "}
-          </Typography>
+          {isLoading ? (
+            <CircularProgress disableShrink />
+          ) : (
+            <Typography color="#8e8f8e">
+              No messages in this room, start chatting...{" "}
+            </Typography>
+          )}
         </Stack>
       ) : (
         <>

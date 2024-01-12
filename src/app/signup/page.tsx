@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
 import { Button, Divider, Stack, TextField, Typography } from "@mui/material";
+import checkEmail from "@/utils/checkEmail";
 
 type Fields = "email" | "password" | "username";
 interface User {
@@ -25,6 +26,7 @@ export default function SignupPage() {
   });
   const [buttonDisabled, setButtonDisabled] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [textFieldError, setTextFieldError] = useState("");
 
   useEffect(() => {
     if (
@@ -34,6 +36,14 @@ export default function SignupPage() {
     )
       setButtonDisabled(false);
     else setButtonDisabled(true);
+
+    if (!checkEmail(user.email) && user.email) {
+      setTextFieldError("Please use a valid email");
+      setButtonDisabled(true);
+      return;
+    } else {
+      setTextFieldError("");
+    }
   }, [user]);
 
   const onSignup = async () => {
@@ -65,6 +75,13 @@ export default function SignupPage() {
     }
   };
 
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter" && !buttonDisabled) {
+      event.preventDefault();
+      onSignup();
+    }
+  };
+
   return (
     <>
       {/* TODO make this component generic */}
@@ -93,6 +110,15 @@ export default function SignupPage() {
                 label={field}
                 value={user[field]}
                 onChange={(e) => setUser({ ...user, [field]: e.target.value })}
+                onKeyDown={handleKeyDown}
+                error={field === "email" && !!textFieldError}
+                helperText={field === "email" && textFieldError}
+                FormHelperTextProps={{
+                  sx: {
+                    textTransform: "none",
+                    fontSize: "11px",
+                  },
+                }}
                 placeholder={
                   field === "email"
                     ? "example@gmail.com"

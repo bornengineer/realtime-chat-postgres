@@ -29,7 +29,7 @@ const Message = (props: MessageProps) => {
           background:
             sender.username === currUser.username ? "#d9fdd3" : "#fff",
           my: 1,
-          borderRadius: "10px",
+          borderRadius: "7px",
           p: "6px 8px 2px 8px",
           color: "#fff",
           minWidth: "25%",
@@ -67,7 +67,7 @@ const Message = (props: MessageProps) => {
             fontSize: "10px",
           }}
         >
-          {moment(createdAt).format("hh:mm:ss A")}
+          {moment(createdAt).format("hh:mm A")}
         </Typography>
       </Stack>
     </Stack>
