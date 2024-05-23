@@ -37,15 +37,22 @@ model User {
   username                  String     @unique
   email                     String     @unique
   password                  String
-  isVerified                Boolean    @default(false)
   isAdmin                   Boolean    @default(false)
   forgotPasswordToken       String?
   forgotPasswordTokenExpiry DateTime?
-  verifyToken               String?
-  verifyTokenExpiry         DateTime?
   createdAt                 DateTime   @default(now())
   updatedAt                 DateTime   @updatedAt
   chatRooms                 ChatRoom[] @relation("RoomUsers")
   messages                  Message[]
   chatRoomsCreated          ChatRoom[]
+}
+
+model UnverifiedUser {
+  id              String    @id @default(cuid())
+  username        String    @unique
+  email           String    @unique
+  verifyOtp       String?
+  verifyOtpExpiry DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 }

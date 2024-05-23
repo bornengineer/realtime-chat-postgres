@@ -3,17 +3,14 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import axios from "axios";
-import toast, { Toaster } from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 import { Button, Divider, Stack, TextField, Typography } from "@mui/material";
 import checkEmail from "@/utils/checkEmail";
-
-type Fields = "email" | "password" | "username";
-interface User {
-  email: string;
-  password: string;
-  username: string;
-}
+import OTPInput from "react-otp-input";
+import onSignup from "@/services/signup";
+import { Fields, User } from "@/types/user";
+import onSendOtp from "@/services/sendOtp";
+import onVerifyEmail from "@/services/verifyEmail";
 
 const fields: Fields[] = ["username", "email", "password"];
 
@@ -27,6 +24,10 @@ export default function SignupPage() {
   const [buttonDisabled, setButtonDisabled] = useState(true);
   const [loading, setLoading] = useState(false);
   const [textFieldError, setTextFieldError] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpVerified, setOtpVerified] = useState(false);
+
+  const [otp, setOtp] = useState("");
 
   useEffect(() => {
     if (
@@ -46,39 +47,10 @@ export default function SignupPage() {
     }
   }, [user]);
 
-  const onSignup = async () => {
-    try {
-      setLoading(true);
-      const res = await axios.post("/api/users/signup", user);
-      if (res.status === 200) {
-        console.log("Signup success :", res.data);
-        setUser({
-          email: "",
-          password: "",
-          username: "",
-        });
-        const toastId = toast.success(res.data.message);
-        setTimeout(() => {
-          toast.remove(toastId);
-          router.push("/login");
-        }, 1500);
-      }
-
-      if (res.status === 202) {
-        toast.error(res.data.error);
-      }
-    } catch (err: any) {
-      console.log("Signup failed :", err.message);
-      toast.error(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter" && !buttonDisabled) {
       event.preventDefault();
-      onSignup();
+      onSignup({ setLoading, setUser, user, router });
     }
   };
 
@@ -127,13 +99,65 @@ export default function SignupPage() {
                     : ""
                 }
               />
+              {index === fields.length - 2 && (
+                <>
+                  {" "}
+                  <Button
+                    variant="contained"
+                    disabled={
+                      !(checkEmail(user.email) && user.email) || otpSent
+                    }
+                    onClick={() => onSendOtp({ setOtpSent, user })}
+                  >
+                    {otpSent ? "OTP Sent" : "Send OTP"}
+                  </Button>
+                  <Stack
+                    p="14px"
+                    gap="1rem"
+                    mt={"1rem"}
+                    border="1px solid #00000030"
+                    borderRadius={"3px"}
+                    sx={{ backgroundColor: "#f3f3f3" }}
+                  >
+                    <Typography color={"#00000080"}>
+                      Enter OTP sent to your email
+                    </Typography>
+                    <OTPInput
+                      value={otp}
+                      onChange={setOtp}
+                      numInputs={6}
+                      renderSeparator={<span style={{ width: "8px" }}></span>}
+                      renderInput={(props) => <input {...props} />}
+                      inputType="tel"
+                      inputStyle={{
+                        border: "1px solid #CFD3DB",
+                        borderRadius: "8px",
+                        width: "40px",
+                        height: "40px",
+                        fontSize: "14px",
+                        color: "#000",
+                        fontWeight: "400",
+                        caretColor: "blue",
+                      }}
+                    />
+                    <Button
+                      variant="contained"
+                      disabled={otp.length < 6 || otpVerified}
+                      onClick={() => onVerifyEmail({ setOtpVerified, otp })}
+                    >
+                      {otpVerified ? "Email Verified" : "Verify"}
+                    </Button>
+                  </Stack>
+                </>
+              )}
             </Stack>
           ))}
+
           <Button
             variant="outlined"
-            onClick={onSignup}
+            onClick={() => onSignup({ setLoading, setUser, user, router })}
             sx={{ height: "50px" }}
-            disabled={buttonDisabled || loading}
+            disabled={buttonDisabled || loading || !otpVerified}
           >
             {loading ? "Processing..." : "Signup"}
           </Button>
