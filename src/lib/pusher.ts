@@ -2,20 +2,23 @@ import PusherServer from "pusher";
 import PusherClient from "pusher-js";
 
 export const pusherServer = new PusherServer({
-  appId: "1734819",
-  key: "25ffc855b048bb7cd635",
-  secret: "eef899172e6112a7145e",
-  cluster: "ap2",
+  appId: process.env.NEXT_PUBLIC_PUSHER_APP_ID!,
+  key: process.env.NEXT_PUBLIC_PUSHER_KEY!,
+  secret: process.env.NEXT_PUBLIC_PUSHER_SECRET!,
+  cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER!,
   useTLS: true,
 });
 
-export const pusherClient = new PusherClient("25ffc855b048bb7cd635", {
-  cluster: "ap2",
-  authEndpoint: "/api/push-auth",
-  authTransport: "ajax",
-  auth: {
-    headers: {
-      "Content-Type": "application/json",
+export const pusherClient = new PusherClient(
+  process.env.NEXT_PUBLIC_PUSHER_KEY!,
+  {
+    cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER!,
+    authEndpoint: "/api/push-auth",
+    authTransport: "ajax",
+    auth: {
+      headers: {
+        "Content-Type": "application/json",
+      },
     },
-  },
-});
+  }
+);
