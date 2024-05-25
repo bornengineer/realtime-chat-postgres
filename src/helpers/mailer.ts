@@ -111,10 +111,10 @@ export const sendVerifyMail = async ({
     };
     transporter.sendMail(mailOptions, function (error, info) {
       if (error) {
-        console.log(error);
+        console.log("OTP sending failed: ", error);
       } else {
         console.log("OTP mail sent: " + info.response);
-        return info;
+        return "OTP successfully sent";
       }
     });
     console.log("otp", otp);
