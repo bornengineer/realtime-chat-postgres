@@ -19,6 +19,8 @@ export const sendVerifyMail = async ({
 }: SendMailProps) => {
   try {
     const otp = generateOTP();
+    console.log("otp", otp);
+
     await db.unverifiedUser.update({
       where: {
         id: userId,
@@ -109,15 +111,17 @@ export const sendVerifyMail = async ({
         </html>
         `,
     };
-    transporter.sendMail(mailOptions, function (error, info) {
-      if (error) {
-        console.log("OTP sending failed: ", error);
-      } else {
-        console.log("OTP mail sent: " + info.response);
-        return "OTP successfully sent";
-      }
+    await new Promise((resolve, reject) => {
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.log("OTP sending failed: ", error);
+          reject(error);
+        } else {
+          resolve(info);
+          console.log("OTP mail sent: " + info.response);
+        }
+      });
     });
-    console.log("otp", otp);
   } catch (error: any) {
     console.error(error.message);
   }
