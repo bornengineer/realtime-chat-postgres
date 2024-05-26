@@ -2,21 +2,51 @@
 import { TextField, Button, Stack, Typography } from "@mui/material";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import LogoutIcon from "@mui/icons-material/Logout";
+import ShareIcon from "@mui/icons-material/Share";
+import RoomCards from "@/components/RoomCards";
+import { LoggedInUser } from "@/types/user";
+import getLoggedInUser from "@/services/getCurrUser";
+import ShareModal from "@/components/ShareModal";
 
 export default function Home() {
   const [roomIdInput, setRoomIdInput] = useState("");
   const [error, setError] = useState("");
   const [roomName, setRoomName] = useState("");
+  const [shareModal, setShareModal] = useState(false);
+  const [rooms, setRooms] = useState([]);
   const router = useRouter();
+
+  const handleShare = () => {
+    setShareModal(true);
+  };
+  const handleCloseModal = () => {
+    setShareModal(false);
+  };
+
+  const [currUser, setCurrUser] = useState<LoggedInUser>({
+    email: "",
+    username: "",
+    id: "",
+  });
 
   const createRoom = async () => {
     const res = await axios.post("api/rooms/create", { name: roomName });
     const roomId: string = res?.data;
     router.push(`/room/${roomId}`);
   };
+
+  useEffect(() => {
+    const getUser = async () => {
+      const user = await getLoggedInUser();
+      const rooms = await axios.get(`api/users/${user.id}/rooms`);
+      setRooms(rooms.data);
+      setCurrUser(user);
+    };
+    getUser();
+  }, []);
 
   const joinRoom = async () => {
     setError("");
@@ -58,9 +88,22 @@ export default function Home() {
 
   return (
     <Stack direction={"column-reverse"} gap={2}>
+      <ShareModal
+        shareModal={shareModal}
+        handleClose={handleCloseModal}
+        inviter={currUser.username}
+      />
       <>
         <Toaster />
-        <Stack alignItems={"flex-end"}>
+        <Stack justifyContent={"space-between"} flexDirection={"row"} px={0.5}>
+          <Button
+            size="small"
+            endIcon={<ShareIcon />}
+            onClick={handleShare}
+            variant="contained"
+          >
+            Share
+          </Button>
           <Button
             size="small"
             sx={{ width: "100px" }}
@@ -74,7 +117,7 @@ export default function Home() {
       </>
       <Stack
         sx={{
-          gap: 4,
+          gap: 2,
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
@@ -86,24 +129,27 @@ export default function Home() {
       >
         <Stack direction={"row"} gap={2}>
           <TextField
-            label={"Room name (optional)"}
+            label={"Room name"}
             onChange={(event) => {
               setRoomName(event.target.value);
             }}
           />
-          <Button variant="outlined" onClick={createRoom}>
+          <Button
+            variant="outlined"
+            onClick={createRoom}
+            disabled={roomName.length < 3}
+          >
             Create Room
           </Button>
         </Stack>
         <Typography
           sx={{
-            border: "1px solid #7170704a",
             p: 1,
             borderRadius: "8px",
             fontSize: "10px",
             fontWeight: "bold",
-            background: "#858178",
-            color: "#fff",
+            background: "#00000030",
+            color: "#00000070",
           }}
         >
           OR
@@ -126,6 +172,7 @@ export default function Home() {
             Join Room
           </Button>
         </Stack>
+        <RoomCards rooms={rooms} currUser={currUser} />
       </Stack>
     </Stack>
   );

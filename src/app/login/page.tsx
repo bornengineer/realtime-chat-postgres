@@ -115,7 +115,7 @@ export default function LoginPage() {
             style={{ textDecoration: "none", color: "#1976d2" }}
             href="/signup"
           >
-            visit signup page
+            Click here to Signup
           </Link>
         </Stack>
       </Stack>

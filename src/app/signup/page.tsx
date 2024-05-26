@@ -108,13 +108,14 @@ export default function SignupPage() {
                       !(checkEmail(user.email) && user.email) || otpSent
                     }
                     onClick={() => onSendOtp({ setOtpSent, user })}
+                    sx={{ mt: "0.5rem" }}
                   >
                     {otpSent ? "OTP Sent" : "Send OTP"}
                   </Button>
                   <Stack
                     p="14px"
                     gap="1rem"
-                    mt={"1rem"}
+                    mt={"0.5rem"}
                     border="1px solid #00000030"
                     borderRadius={"3px"}
                     sx={{ backgroundColor: "#f3f3f3" }}
@@ -168,7 +169,7 @@ export default function SignupPage() {
             style={{ textDecoration: "none", color: "#1976d2" }}
             href="/login"
           >
-            visit login page
+            Click here to Login
           </Link>
         </Stack>
       </Stack>

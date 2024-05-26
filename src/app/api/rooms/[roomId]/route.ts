@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { User } from "@/utils/types";
+import serializeUsers from "@/utils/serializeUsers";
 import { NextResponse } from "next/server";
 export async function GET(req: Request) {
   try {
@@ -24,15 +24,4 @@ export async function GET(req: Request) {
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
-}
-
-function serializeUsers(users: any): User {
-  const serializedUsers = users.map((user: any) => ({
-    id: user.id,
-    username: user.username,
-    email: user.email,
-    isVerified: user.isVerified,
-    isAdmin: user.isAdmin,
-  }));
-  return serializedUsers;
 }

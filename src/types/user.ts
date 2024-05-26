@@ -11,6 +11,21 @@ export interface User {
   username: string;
 }
 
+export interface LoggedInUser {
+  email: string;
+  username: string;
+  id: string;
+  isAdmin?: boolean;
+}
+
+export interface Room {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  name: string;
+  creatorId: string;
+}
+
 export interface OnSignupProps {
   setLoading: (loading: boolean) => void;
   setUser: (user: User) => void;
@@ -26,4 +41,11 @@ export interface SendOtpProps {
 export interface OnVerifyEmailProps {
   setOtpVerified: (otpVerified: boolean) => void;
   otp: string;
+}
+
+export interface ShareAppProps {
+  email: string;
+  handleClose: () => void;
+  url: string;
+  inviter: string;
 }

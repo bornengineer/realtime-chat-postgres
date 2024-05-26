@@ -46,13 +46,11 @@ export async function POST(request: NextRequest) {
 
     console.log("newUnverifiedUser", newUnverifiedUser);
 
-    const mailRes = await sendVerifyMail({
+    await sendVerifyMail({
       userEmail: email,
       userId: newUnverifiedUser.id,
       userName: newUnverifiedUser.username,
     });
-
-    console.log("mailRes", mailRes);
 
     return NextResponse.json({
       message: "OTP sent successfully",

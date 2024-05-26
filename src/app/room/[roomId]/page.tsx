@@ -4,8 +4,8 @@ import Goback from "@/components/Goback";
 import Messages from "@/components/Messages";
 import SendMessage from "@/components/SendMessage";
 import getLoggedInUser from "@/services/getCurrUser";
+import { LoggedInUser } from "@/types/user";
 import truncateId from "@/utils/truncateId";
-import { User } from "@/utils/types";
 import { Stack, Typography } from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
 
@@ -15,7 +15,7 @@ interface RoomProps {
   name: string;
   id: string;
   creatorId: string;
-  users: User[];
+  users: LoggedInUser[];
 }
 
 const Room = ({ params }: { params: { roomId: string } }) => {
@@ -23,11 +23,13 @@ const Room = ({ params }: { params: { roomId: string } }) => {
   const [initialMessages, setInitialMessages] = useState([]);
   const [selectedRoom, setSelectedRoom] = useState<RoomProps>();
   const [loading, setLoading] = useState(true);
-  const [currUser, setCurrUser] = useState({
+
+  const [currUser, setCurrUser] = useState<LoggedInUser>({
     email: "",
     username: "",
     id: "",
   });
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -92,7 +94,6 @@ const Room = ({ params }: { params: { roomId: string } }) => {
           p: 0,
           borderRadius: "15px 15px 0 0",
           background: "#f0ebe2",
-          // width: "35vw",
           minWidth: { xs: "340px", sm: "40vw" },
         }}
       >
