@@ -1,10 +1,16 @@
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import LibraryAddCheckIcon from "@mui/icons-material/LibraryAddCheck";
+import { IconButton, Stack, SxProps } from "@mui/material";
 import { useState } from "react";
 
-const CopyToClipboardButton = (props: { text: string }) => {
+const CopyToClipboardButton = ({
+  text,
+  customCss = {},
+}: {
+  text: string;
+  customCss?: SxProps;
+}) => {
   const [isCopied, setIsCopied] = useState(false);
-  const { text } = props;
   const handleCopyClick = () => {
     navigator.clipboard
       .writeText(text)
@@ -20,13 +26,14 @@ const CopyToClipboardButton = (props: { text: string }) => {
       });
   };
 
-  return !isCopied ? (
-    <ContentCopyIcon
-      style={{ fontSize: "13px", cursor: "pointer" }}
-      onClick={handleCopyClick}
-    />
-  ) : (
-    <LibraryAddCheckIcon style={{ fontSize: "13px", cursor: "pointer" }} />
+  return (
+    <IconButton sx={customCss} onClick={!isCopied ? handleCopyClick : () => {}}>
+      {!isCopied ? (
+        <ContentCopyIcon style={{ fontSize: "13px", cursor: "pointer" }} />
+      ) : (
+        <LibraryAddCheckIcon style={{ fontSize: "13px", cursor: "pointer" }} />
+      )}
+    </IconButton>
   );
 };
 

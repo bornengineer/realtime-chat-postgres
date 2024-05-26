@@ -89,12 +89,14 @@ export default function ShareModal({
                 })
               }
               fullWidth
+              disabled={!!textFieldError || email.length < 1}
             >
               Share
             </Button>
             <Tooltip title="Copy url to App">
-              <IconButton
-                sx={{
+              <CopyToClipboardButton
+                text={window.location.hostname}
+                customCss={{
                   backgroundColor: "primary.main",
                   transition: "all 0.2s ease-in-out",
                   "&:hover": {
@@ -105,9 +107,7 @@ export default function ShareModal({
                   height: "40px",
                   fontSize: "18px",
                 }}
-              >
-                <CopyToClipboardButton text={window.location.hostname} />
-              </IconButton>
+              />
             </Tooltip>
           </Stack>
         </Stack>
