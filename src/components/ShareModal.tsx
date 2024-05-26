@@ -33,6 +33,7 @@ export default function ShareModal({
 }) {
   const [email, setEmail] = React.useState("");
   const [textFieldError, setTextFieldError] = React.useState("");
+  const [appUrl, setAppUrl] = React.useState("");
 
   React.useEffect(() => {
     if (!checkEmail(email) && email) {
@@ -42,6 +43,10 @@ export default function ShareModal({
       setTextFieldError("");
     }
   }, [email]);
+
+  React.useEffect(() => {
+    if (typeof window !== "undefined") setAppUrl(window.location.hostname);
+  }, []);
 
   return (
     <div>
@@ -84,7 +89,7 @@ export default function ShareModal({
                 shareApp({
                   email,
                   handleClose,
-                  url: window.location.hostname,
+                  url: appUrl,
                   inviter,
                 })
               }
@@ -93,22 +98,22 @@ export default function ShareModal({
             >
               Share
             </Button>
-            <Tooltip title="Copy url to App">
-              <CopyToClipboardButton
-                text={window.location.hostname}
-                customCss={{
-                  backgroundColor: "primary.main",
-                  transition: "all 0.2s ease-in-out",
-                  "&:hover": {
-                    color: "black",
-                  },
-                  color: "white",
-                  width: "40px",
-                  height: "40px",
-                  fontSize: "18px",
-                }}
-              />
-            </Tooltip>
+
+            <CopyToClipboardButton
+              text={appUrl}
+              tooltipText={"Copy App URL"}
+              customCss={{
+                backgroundColor: "primary.main",
+                transition: "all 0.2s ease-in-out",
+                "&:hover": {
+                  color: "black",
+                },
+                color: "white",
+                width: "40px",
+                height: "40px",
+                fontSize: "18px",
+              }}
+            />
           </Stack>
         </Stack>
       </Modal>

@@ -125,7 +125,11 @@ const Room = ({ params }: { params: { roomId: string } }) => {
               }}
             >
               <Typography fontSize={"13px"}>{truncateId(roomId)}</Typography>
-              <CopyToClipboardButton text={roomId} />
+
+              <CopyToClipboardButton
+                text={roomId}
+                tooltipText={"Copy room id to share"}
+              />
             </Stack>
           </Stack>
           <Stack sx={{ color: "#667781", fontSize: "12px" }}>
